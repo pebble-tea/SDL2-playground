@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     }
 
     gWindow = SDL_CreateWindow(
-      "Hello Platformer!",
+      SCREEN_TITLE,
       SDL_WINDOWPOS_CENTERED,
       SDL_WINDOWPOS_CENTERED,
       SCREEN_WIDTH, SCREEN_HEIGHT, 0
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
       return 1;
     }
 
-    gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_FLAGS);
+    gRenderer = SDL_CreateRenderer(gWindow, -1, ENGINE_RENDERER_FLAGS);
     if(gRenderer==NULL)
     {
       printf("Error while creating gRenderer: %s\n", SDL_GetError());
