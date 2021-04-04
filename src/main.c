@@ -2,63 +2,66 @@
 #include <engine.h>
 #include <SDL2/SDL.h>
 
-int main(int argc, char* argv[])
+SDL_Window* gWindow;
+SDL_Renderer* gRenderer;
+uint8_t gState;
+
+int main()
 {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
+    // Initialize SDL2 Subsystems
+    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0)
     {
-      printf("Error initializing SDL: %s\n", SDL_GetError());
-      return 1;
+        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return 1;
     }
 
-    gWindow = SDL_CreateWindow(
-      SCREEN_TITLE,
-      SDL_WINDOWPOS_CENTERED,
-      SDL_WINDOWPOS_CENTERED,
-      SCREEN_WIDTH, SCREEN_HEIGHT, 0
-    );
-
-    if(gWindow==NULL)
+    // Create new gWindow
+    gWindow = SDL_CreateWindow( SCREEN_TITLE, SDL_WINDOWPOS_UNDEFINED,
+                                SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,SDL_WINDOW_OPENGL);
+    if (gWindow == NULL)
     {
-      printf("Error while creating gWindow: %s\n", SDL_GetError());
-      Engine_Quit();
-      return 1;
+        SDL_Log("Unable to create gWindow : %s", SDL_GetError());
+        return 1;
     }
 
+    // Create new gRenderer
     gRenderer = SDL_CreateRenderer(gWindow, -1, ENGINE_RENDERER_FLAGS);
-    if(gRenderer==NULL)
+    if(gRenderer == NULL)
     {
-      printf("Error while creating gRenderer: %s\n", SDL_GetError());
-      Engine_Quit();
-      return 1;
+        SDL_Log("Unable to create gRenderer : %s", SDL_GetError());
+        return 1;
     }
-
-    // Initialize
-    Engine_Init();
 
     SDL_Event e;
+
+
+    Engine_Start();
+
     gState = ENGINE_RUNNING;
-    do
+    while (gState != ENGINE_STOPPED)
     {
-        // Continue if paused
-        if(gState==ENGINE_PAUSED) continue;
-        // pollEvents
-        while(SDL_PollEvent(&e)!=0)
-        {
-            if(e.type==SDL_QUIT) gState = ENGINE_STOPPED;
+        if (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) {break;}
             Engine_PollEvent(e);
         }
 
-        // Update first then render
+        // Engine_Update
+        // Here we will use all physics, logic related functionalities
         Engine_Update();
 
-        // Render ender black screen by default
-        SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255); // draw black background by default
         SDL_RenderClear(gRenderer);
+
+        // Engine_Render
+        // Here we wil use all gfx related funcitonalities
         Engine_Render();
+
         SDL_RenderPresent(gRenderer);
+    }
 
-    }while(gState!=ENGINE_STOPPED);
-
-    Engine_Quit();
+    // Destroy all SDL2 subsystems and quit applicaiton
+    SDL_DestroyRenderer(gRenderer);
+    SDL_DestroyWindow(gWindow);
+    SDL_Quit();
     return 0;
 }
