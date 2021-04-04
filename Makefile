@@ -10,6 +10,8 @@ DEBUG=debug/
 
 OBJ=program.exe
 
+MOTD="Daily Commit from Makefile"
+
 all: compile run
 compile:
 	echo Compiling sources ...
@@ -17,3 +19,8 @@ compile:
 run:
 	echo Starting $(OBJ) ...
 	./$(DEBUG)$(OBJ)
+
+upload:
+	git add .
+	git commit -m $(MOTD)
+	git push origin master
