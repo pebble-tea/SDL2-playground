@@ -3,7 +3,7 @@ CFLAGS=-Wall
 
 INCLUDES = -Iinclude #-Idevel/SDL2/include
 LIBRARIES = #-Ldevel/SDL2/lib
-LINKER= -lSDL2main -lSDL2
+LINKER= -lSDL2main -lSDL2 -lm
 
 SRC=src/
 DEBUG=debug/
